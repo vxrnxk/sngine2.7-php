@@ -1,0 +1,5 @@
+.stories.facesnap .story > a {text-decoration:none;color:#333}
+.stories.facesnap .story > a > .img {border-radius:50%;padding:2px;background: #d6249f;background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);}
+.stories.facesnap .story > a > .img > * {border-radius: 50%; border:3px solid #fff;}
+.stories.facesnap .story.seen{opacity:.5}
+.stories.facesnap .story.seen > a > .img {background:#999}

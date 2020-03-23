@@ -1,0 +1,249 @@
+## Security Control ##
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak|tpl)$">
+	Order Allow,Deny
+	Deny from all
+</FilesMatch>
+<IfModule mod_security.c>
+	SecFilterScanPOST Off
+</IfModule>
+
+## Cache Control ##
+<IfModule mod_headers.c>
+<FilesMatch "\.(jpg|jpeg|png|gif|svg|swf|css|js)$">
+	Header set Cache-Control "max-age=31536000, public"
+</FilesMatch>
+</IfModule>
+
+## Gzip Control ##
+<IfModule mod_deflate.c>
+	AddOutputFilterByType DEFLATE text/html
+	AddOutputFilterByType DEFLATE text/css
+	AddOutputFilterByType DEFLATE text/javascript
+	AddOutputFilterByType DEFLATE text/xml
+	AddOutputFilterByType DEFLATE text/plain
+	AddOutputFilterByType DEFLATE image/jpg
+	AddOutputFilterByType DEFLATE image/png
+	AddOutputFilterByType DEFLATE image/svg+xml
+	AddOutputFilterByType DEFLATE image/x-icon
+	AddOutputFilterByType DEFLATE application/rss+xml
+	AddOutputFilterByType DEFLATE application/javascript
+	AddOutputFilterByType DEFLATE application/x-javascript
+	AddOutputFilterByType DEFLATE application/xml
+	AddOutputFilterByType DEFLATE application/xhtml+xml
+	AddOutputFilterByType DEFLATE application/x-font
+	AddOutputFilterByType DEFLATE application/x-font-truetype
+	AddOutputFilterByType DEFLATE application/x-font-ttf
+	AddOutputFilterByType DEFLATE application/x-font-otf
+	AddOutputFilterByType DEFLATE application/x-font-opentype
+	AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+	AddOutputFilterByType DEFLATE font/ttf
+	AddOutputFilterByType DEFLATE font/otf
+	AddOutputFilterByType DEFLATE font/opentype
+	BrowserMatch ^Mozilla/4 gzip-only-text/html
+	BrowserMatch ^Mozilla/4\.0[678] no-gzip
+	BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</IfModule>
+
+## Expires Control ##
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresByType image/jpg "access plus 1 year"
+	ExpiresByType image/jpeg "access plus 1 year"
+	ExpiresByType image/gif "access plus 1 year"
+	ExpiresByType image/png "access plus 1 year"
+	ExpiresByType text/css "access plus 1 month"
+	ExpiresByType application/pdf "access plus 1 month"
+	ExpiresByType text/x-javascript "access plus 1 month"
+	ExpiresByType application/x-shockwave-flash "access plus 1 month"
+	ExpiresByType image/x-icon "access plus 1 year"
+	ExpiresDefault "access plus 2 days"
+</IfModule>
+
+## RewriteEngine ##
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule .* - [L,QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Installer
+RewriteRule ^install/?$ install.php [L,QSA]
+
+# Static Pages
+RewriteRule ^static/([^/]+)/?$ static.php?url=$1 [L,QSA]
+
+# Contacts
+RewriteRule ^contacts/?$ contact.php [L,QSA]
+
+# Developers
+RewriteRule ^api/([^/]+)/?$ api.php?do=$1 [L,QSA]
+RewriteRule ^developers/?$ developers.php [L,QSA]
+RewriteRule ^developers/([^/]+)/?$ developers.php?view=$1 [L,QSA]
+RewriteRule ^developers/edit/([^/]+)/?$ developers.php?view=edit&app_auth_id=$1 [L,QSA]
+RewriteRule ^share/?$ share.php [L,QSA]
+
+# Directory
+RewriteRule ^directory/?$ directory.php [L,QSA]
+RewriteRule ^directory/([^/]+)/?$ directory.php?view=$1 [L,QSA]
+RewriteRule ^directory/([^/]+)/([^/]+)/?$ directory.php?view=$1&page=$2 [L,QSA]
+
+# Search
+RewriteRule ^search/?$ search.php [L,QSA]
+RewriteRule ^search/hashtag/([^/]+)/?$ search.php?query=$1&hashtag=1 [L,QSA]
+RewriteRule ^search/([^/]+)/?$ search.php?query=$1&hashtag=0 [L,QSA]
+
+# Sign(in|up|out)
+RewriteRule ^signin/?$ sign.php?do=in [L,QSA]
+RewriteRule ^signup/?$ sign.php?do=up [L,QSA]
+RewriteRule ^signout/?$ sign.php?do=out [L,QSA]
+RewriteRule ^reset/?$ sign.php?do=reset [L,QSA]
+RewriteRule ^activation/([^/]+)/([^/]+)/?$ activation.php?user_id=$1&code=$2 [L,QSA]
+
+# Social Logins
+RewriteRule ^connect/([^/]+)/?$ connect.php?do=connect&provider=$1 [L,QSA]
+RewriteRule ^revoke/([^/]+)/?$ connect.php?do=revoke&provider=$1 [L,QSA]
+
+# Packages
+RewriteRule ^packages/?$ packages.php [L,QSA]
+
+# Started
+RewriteRule ^started/?$ started.php [L,QSA]
+RewriteRule ^started/finished?$ started.php?finished=true [L,QSA]
+
+# Messages
+RewriteRule ^messages/?$ messages.php [L,QSA]
+RewriteRule ^messages/new?$ messages.php?view=new [L,QSA]
+RewriteRule ^messages/([^/]+)/?$ messages.php?cid=$1 [L,QSA]
+
+# Notifications
+RewriteRule ^notifications/?$ notifications.php [L,QSA]
+
+# Settings
+RewriteRule ^settings/?$ settings.php [L,QSA]
+RewriteRule ^settings/([^/]+)/?$ settings.php?view=$1 [L,QSA]
+RewriteRule ^settings/([^/]+)/([^/]+)/?$ settings.php?view=$1&sub_view=$2 [L,QSA]
+
+# Posts & Photos
+RewriteRule ^posts/([^/]+)/?$ post.php?post_id=$1 [L,QSA]
+RewriteRule ^photos/([^/]+)/?$ photo.php?photo_id=$1 [L,QSA]
+
+# Popular
+RewriteRule ^popular/?$ index.php?view=popular [L,QSA]
+
+# Discover
+RewriteRule ^discover/?$ index.php?view=discover [L,QSA]
+
+# Saved
+RewriteRule ^saved/?$ index.php?view=saved [L,QSA]
+
+# Memories
+RewriteRule ^memories/?$ index.php?view=memories [L,QSA]
+
+# Ads
+RewriteRule ^ads/?$ ads.php [L,QSA]
+RewriteRule ^ads/new?$ ads.php?view=new [L,QSA]
+RewriteRule ^ads/edit/([^/]+)/?$ ads.php?view=edit&campaign_id=$1 [L,QSA]
+RewriteRule ^wallet/?$ ads.php?view=wallet [L,QSA]
+
+# Boosted
+RewriteRule ^boosted/posts/?$ index.php?view=boosted_posts [L,QSA]
+RewriteRule ^boosted/pages/?$ index.php?view=boosted_pages [L,QSA]
+
+# People
+RewriteRule ^people/?$ people.php [L,QSA]
+RewriteRule ^people/find/?$ people.php?view=find [L,QSA]
+RewriteRule ^people/friend_requests/?$ people.php?view=friend_requests [L,QSA]
+RewriteRule ^people/sent_requests/?$ people.php?view=sent_requests [L,QSA]
+
+# Pages
+RewriteRule ^pages/?$ pages.php [L,QSA]
+RewriteRule ^pages/liked/?$ pages.php?view=liked [L,QSA]
+RewriteRule ^pages/manage/?$ pages.php?view=manage [L,QSA]
+RewriteRule ^pages/([^/]+)/?$ page.php?username=$1 [L,QSA]
+RewriteRule ^pages/([^/]+)/([^/]+)/?$ page.php?username=$1&view=$2 [L,QSA]
+RewriteRule ^pages/([^/]+)/([^/]+)/([^/]+)/?$ page.php?username=$1&view=$2&id=$3 [L,QSA]
+
+# Groups
+RewriteRule ^groups/?$ groups.php [L,QSA]
+RewriteRule ^groups/joined/?$ groups.php?view=joined [L,QSA]
+RewriteRule ^groups/manage/?$ groups.php?view=manage [L,QSA]
+RewriteRule ^groups/([^/]+)/?$ group.php?username=$1 [L,QSA]
+RewriteRule ^groups/([^/]+)/([^/]+)/?$ group.php?username=$1&view=$2 [L,QSA]
+RewriteRule ^groups/([^/]+)/([^/]+)/([^/]+)/?$ group.php?username=$1&view=$2&id=$3 [L,QSA]
+
+# Events
+RewriteRule ^events/?$ events.php [L,QSA]
+RewriteRule ^events/going/?$ events.php?view=going [L,QSA]
+RewriteRule ^events/interested/?$ events.php?view=interested [L,QSA]
+RewriteRule ^events/invited/?$ events.php?view=invited [L,QSA]
+RewriteRule ^events/manage/?$ events.php?view=manage [L,QSA]
+RewriteRule ^events/([^/]+)/?$ event.php?event_id=$1 [L,QSA]
+RewriteRule ^events/([^/]+)/([^/]+)/?$ event.php?event_id=$1&view=$2 [L,QSA]
+RewriteRule ^events/([^/]+)/([^/]+)/([^/]+)/?$ event.php?event_id=$1&view=$2&id=$3 [L,QSA]
+
+# Blogs
+RewriteRule ^articles/?$ index.php?view=articles [L,QSA]
+RewriteRule ^blogs/?$ blogs.php [L,QSA]
+RewriteRule ^blogs/new/?$ blogs.php?view=new [L,QSA]
+RewriteRule ^blogs/edit/([^/]+)/?$ blogs.php?view=edit&post_id=$1 [L,QSA]
+RewriteRule ^blogs/category/([^/]+)/([^/]+)/?$ blogs.php?view=category&category_id=$1 [L,QSA]
+RewriteRule ^blogs/([^/]+)/([^/]+)/?$ blogs.php?view=article&post_id=$1 [L,QSA]
+
+# Market
+RewriteRule ^products/?$ index.php?view=products [L,QSA]
+RewriteRule ^market/?$ market.php [L,QSA]
+RewriteRule ^market/search/?$ market.php?view=search [L,QSA]
+RewriteRule ^market/search/([^/]+)/?$ market.php?view=search&query=$1 [L,QSA]
+RewriteRule ^market/search/([^/]+)/([^/]+)/?$ market.php?view=search&query=$1&page=$2 [L,QSA]
+RewriteRule ^market/category/([^/]+)/?$ market.php?view=category&category_id=$1 [L,QSA]
+RewriteRule ^market/category/([^/]+)/([^/]+)/?$ market.php?view=category&category_id=$1&category_url=$2 [L,QSA]
+RewriteRule ^market/category/([^/]+)/([^/]+)/([^/]+)/?$ market.php?view=category&category_id=$1&category_url=$2&page=$3 [L,QSA]
+RewriteRule ^market/([^/]+)/?$ market.php?page=$1 [L,QSA]
+
+# Forums
+RewriteRule ^forums/?$ forums.php [L,QSA]
+RewriteRule ^forums/my-threads/?$ forums.php?view=my-threads [L,QSA]
+RewriteRule ^forums/my-replies/?$ forums.php?view=my-replies [L,QSA]
+RewriteRule ^forums/search/?$ forums.php?view=search [L,QSA]
+RewriteRule ^forums/search-results/?$ forums.php?view=search-results [L,QSA]
+RewriteRule ^forums/new-thread/([^/]+)/?$ forums.php?view=new-thread&forum_id=$1 [L,QSA]
+RewriteRule ^forums/edit-thread/([^/]+)/?$ forums.php?view=edit-thread&thread_id=$1 [L,QSA]
+RewriteRule ^forums/new-reply/([^/]+)/?$ forums.php?view=new-reply&thread_id=$1 [L,QSA]
+RewriteRule ^forums/edit-reply/([^/]+)/?$ forums.php?view=edit-reply&reply_id=$1 [L,QSA]
+RewriteRule ^forums/thread/([^/]+)/([^/]+)/?$ forums.php?view=thread&thread_id=$1 [L,QSA]
+RewriteRule ^forums/([^/]+)/([^/]+)/?$ forums.php?view=forum&forum_id=$1 [L,QSA]
+
+# Movies
+RewriteRule ^movies/?$ movies.php [L,QSA]
+RewriteRule ^movies/search/?$ movies.php?view=search [L,QSA]
+RewriteRule ^movies/search/([^/]+)/?$ movies.php?view=search&query=$1 [L,QSA]
+RewriteRule ^movies/search/([^/]+)/([^/]+)/?$ movies.php?view=search&query=$1&page=$2 [L,QSA]
+RewriteRule ^movies/genre/([^/]+)/([^/]+)/?$ movies.php?view=genre&genre_id=$1 [L,QSA]
+RewriteRule ^movies/genre/([^/]+)/([^/]+)/([^/]+)/?$ movies.php?view=genre&genre_id=$1&page=$3 [L,QSA]
+RewriteRule ^movies/([^/]+)/?$ movies.php?page=$1 [L,QSA]
+RewriteRule ^movie/([^/]+)/([^/]+)/?$ movies.php?view=movie&movie_id=$1 [L,QSA]
+
+# Games
+RewriteRule ^games/?$ games.php [L,QSA]
+RewriteRule ^games/played/?$ games.php?view=played [L,QSA]
+RewriteRule ^games/([^/]+)/([^/]+)/?$ games.php?view=game&game_id=$1 [L,QSA]
+
+# Moderator Panel
+RewriteRule ^modcp/?$ moderator.php [L,QSA]
+RewriteRule ^modcp/([^/]+)/?$ moderator.php?view=$1 [L,QSA]
+RewriteRule ^modcp/([^/]+)/([^/]+)/?$ moderator.php?view=$1&sub_view=$2 [L,QSA]
+RewriteRule ^modcp/([^/]+)/([^/]+)/([^/]+)/?$ moderator.php?view=$1&sub_view=$2&id=$3 [L,QSA]
+
+# Admin Panel
+RewriteRule ^admincp/?$ admin.php [L,QSA]
+RewriteRule ^admincp/([^/]+)/?$ admin.php?view=$1 [L,QSA]
+RewriteRule ^admincp/([^/]+)/([^/]+)/?$ admin.php?view=$1&sub_view=$2 [L,QSA]
+RewriteRule ^admincp/([^/]+)/([^/]+)/([^/]+)/?$ admin.php?view=$1&sub_view=$2&id=$3 [L,QSA]
+
+# Profile
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/?$ profile.php?username=$1 [L,QSA]
+RewriteRule ^([^/]+)/([^/]+)/?$ profile.php?username=$1&view=$2 [L,QSA]
+RewriteRule ^([^/]+)/([^/]+)/([^/]+)/?$ profile.php?username=$1&view=$2&id=$3 [L,QSA]
